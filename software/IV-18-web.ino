@@ -52,12 +52,12 @@ String ipToString(IPAddress ip){
 /*
  * 
  */
-String responseHTML = "<meta charset='utf-8'>"
+String responseHTML = ""
 "<style>"
-"body {"
-"  background: #ffff00;"
-"  font-size: 96px !important;"
-"}"
+//"body {"
+//"  background: #ffff00;"
+//"  font-size: 96px !important;"
+//"}"
 ".all-news-btn {"
 "  "
 "  background: #666666;"
@@ -97,8 +97,113 @@ String responseHTML = "<meta charset='utf-8'>"
 " @media only screen and (max-width:480px) { "
 "  .all-news-btn {width: 100%; font-size: 4.25em; }"
 "}"
+"  body {  "
+" font-family: Arial, sans-serif; "
+" background-color: #f1f1f1;  "
+" } "
+" #calculator { "
+" width: 80wh;  "
+" height: 100vh;  "
+" margin: 0 auto; "
+" background-color: #fff; "
+" border: 1px solid #ccc; "
+" border-radius: 5px; "
+" padding: 10px;  "
+" } "
+" #display {  "
+" border: 1px solid #ccc; "
+" border-radius: 5px; "
+" padding: 5px; "
+" margin-bottom: 10px;  "
+" } "
+" #display input[type=\"text\"] { "
+" width: 100%;  "
+" text-align: right;  "
+" font-size: 24px;  "
+" border: none; "
+" } "
+" .button-row { "
+" display: flex;  "
+" } "
+" .button-row button {  "
+" flex: 1;  "
+" font-size: 18px;  "
+" margin: 5px;  "
+" padding: 10px;  "
+" border: none; "
+" border-radius: 5px; "
+" background-color: #eee; "
+" } "
+" .button-row button:hover {  "
+" background-color: #ddd; "
+" } "
+" #equals { "
+" background-color: #f44336;  "
+" color: #fff;  "
+" } "
+" #equals:hover { "
+" background-color: #d32f2f;  "
+" } "
+" #clear {  "
+" background-color: #bfbfbf;  "
+" color: #fff;  "
+" } "
+" #clear:hover {  "
+" background-color: #8c8c8c;  "
+" } "
 "</style>"
 ""
+
+""
+"<html>"
+"<head>"
+"<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'>"
+"<meta charset='utf-8'>"
+"</head>"
+"<body>"
+"<input id='inputText' class='display' type='text' value='hello'/>"
+"<button onclick = 'stop_timer_and_send_text()' class='display'>傳送</button>"
+"<p>"
+"<button onclick ='active_clock()' class='display'>時鐘</button>"
+"<p>"
+"<h1><p id='demo'></p></h1>"
+"  <div id='calculator'> "
+" <div id='display'>  "
+" <input type='text' id='result' value='0' readonly>  "
+" </div>  "
+" <div class='button-row'>  "
+" <button id='clear'>清除</button>  "
+" <button id='sqrt'>√</button>  "
+" <button id='percent'>%</button> "
+" <button id='divide'>÷</button>  "
+" </div>  "
+" <div class='button-row'>  "
+" <button id='seven'>7</button> "
+" <button id='eight'>8</button> "
+" <button id='nine'>9</button>  "
+" <button id='multiply'>×</button>  "
+" </div>  "
+" <div class='button-row'>  "
+" <button id='four'>4</button>  "
+" <button id='five'>5</button>  "
+" <button id='six'>6</button> "
+" <button id='subtract'>-</button>  "
+" </div>  "
+" <div class='button-row'>  "
+" <button id='one'>1</button> "
+" <button id='two'>2</button> "
+" <button id='three'>3</button> "
+" <button id='add'>+</button> "
+" </div>  "
+" <div class='button-row'>  "
+" <button id='zero'>0</button>  "
+" <button id='decimal'>.</button> "
+" <button id='equals'>=</button>  "
+" </div>  "
+" <div> "
+" dahai with 9527.  "
+" </div>  "
+" </div>  "
 "<script> "
 " var timer = null;"
 "function start_timer() {"
@@ -147,16 +252,196 @@ String responseHTML = "<meta charset='utf-8'>"
 "  Http.send();   "
 ""
 "}"
+"  const result = document.getElementById('result'); "
+" const clear = document.getElementById('clear'); "
+" const sqrt = document.getElementById('sqrt'); "
+" const percent = document.getElementById('percent'); "
+" const divide = document.getElementById('divide'); "
+" const seven = document.getElementById('seven'); "
+" const eight = document.getElementById('eight'); "
+" const nine = document.getElementById('nine'); "
+" const multiply = document.getElementById('multiply'); "
+" const four = document.getElementById('four'); "
+" const five = document.getElementById('five'); "
+" const six = document.getElementById('six'); "
+" const subtract = document.getElementById('subtract'); "
+" const one = document.getElementById('one'); "
+" const two = document.getElementById('two'); "
+" const three = document.getElementById('three'); "
+" const add = document.getElementById('add'); "
+" const zero = document.getElementById('zero'); "
+" const decimal = document.getElementById('decimal'); "
+" const equals = document.getElementById('equals'); "
+" let input = ''; "
+" let operand1 = '';  "
+" let operand2 = '';  "
+" let operator = '';  "
+" let isOperatorClicked = false;  "
+" let Finish = true;  "
+" function updateResult(value) {  "
+" result.value = value; "
+"  const Http = new XMLHttpRequest();"
+"  const url='/text/'+value;"
+"  Http.open('GET', url);   "
+"  Http.send();   "
+
+" } "
+" function addInput(newInput) { "
+" if (input === '0' && newInput === '0') {  "
+" return; "
+" } "
+" if (input === '0' || isOperatorClicked || Finish) { "
+" input = newInput; "
+" Finish = false; "
+" } else {  "
+" input += newInput;  "
+" } "
+" isOperatorClicked = false;  "
+" updateResult(input);  "
+" } "
+" function clearInput() { "
+" input = '0';  "
+" operand1 = '';  "
+" operand2 = '';  "
+" operator = '';  "
+" isOperatorClicked = false;  "
+" Finish = true;  "
+" updateResult(input);  "
+" } "
+" function calculate() {  "
+" switch (operator) { "
+" case '+': "
+" input = parseFloat(operand1) + parseFloat(input); "
+" break;  "
+" case '-': "
+" input = parseFloat(operand1) - parseFloat(input); "
+" break;  "
+" case '*': "
+" input = parseFloat(operand1) * parseFloat(input); "
+" break;  "
+" case '/': "
+" input = parseFloat((parseFloat(operand1) / parseFloat(input)).toFixed(6));  "
+" break;  "
+
+" default:  "
+" break;  "
+" } "
+" input = input.toString(); "
+" operator = '';  "
+" updateResult(input);  "
+" } "
+" clear.addEventListener('click', () => { "
+" clearInput(); "
+" }); "
+" sqrt.addEventListener('click', () => {  "
+" input = parseFloat(Math.sqrt(parseFloat(input)).toFixed(6)); "
+" input = input.toString(); "
+" updateResult(input);  "
+
+" }); "
+" percent.addEventListener('click', () => { "
+" input = parseFloat(input) * 1 / 100;  "
+" input = input.toString(); "
+" updateResult(input);  "
+
+" }); "
+" divide.addEventListener('click', () => {  "
+"  if(operand1 !=''){"
+"    calculate();"
+"  }"
+" operator = '/'; "
+" operand1 = input; "
+" isOperatorClicked = true; "
+" }); "
+" seven.addEventListener('click', () => { "
+" addInput('7');  "
+" }); "
+" eight.addEventListener('click', () => { "
+" addInput('8');  "
+" }); "
+" nine.addEventListener('click', () => {  "
+" addInput('9');  "
+" }); "
+" multiply.addEventListener('click', () => {  "
+"  if(operand1 !=''){"
+"    calculate();"
+"  }"
+" operator = '*'; "
+" operand1 = input; "
+" isOperatorClicked = true; "
+" }); "
+" four.addEventListener('click', () => {  "
+" addInput('4');  "
+" }); "
+" five.addEventListener('click', () => {  "
+" addInput('5');  "
+" }); "
+" six.addEventListener('click', () => { "
+" addInput('6');  "
+" }); "
+" subtract.addEventListener('click', () => {  "
+"  if(operand1 !=''){"
+"    calculate();"
+"  }"
+" operator = '-'; "
+" operand1 = input; "
+" isOperatorClicked = true; "
+" }); "
+" one.addEventListener('click', () => { "
+" addInput('1');  "
+" }); "
+" two.addEventListener('click', () => { "
+" addInput('2');  "
+" }); "
+" three.addEventListener('click', () => { "
+" addInput('3');  "
+" }); "
+" add.addEventListener('click', () => { "
+"  if(operand1 !=''){"
+"    calculate();"
+"  }"
+" operator = '+'; "
+" operand1 = input; "
+" isOperatorClicked = true; "
+" }); "
+" zero.addEventListener('click', () => {  "
+" addInput('0');  "
+" }); "
+" function handleDecimal() {  "
+" if (input === '') { "
+" addInput('0.'); "
+" } else if (!input.includes('.')) {  "
+" addInput('.');  "
+" } "
+" } "
+" decimal.addEventListener('click', () => { "
+" handleDecimal();  "
+" }); "
+" equals.addEventListener('click', () => {  "
+" calculate();  "
+" Finish = true;  "
+" }); "
+" document.addEventListener('keydown', (event) => { "
+" const key = event.key;  "
+" if (!isNaN(key) || key === '.') { "
+" addInput(key);  "
+" } else if (key === '+' || key === '-' || key === '*' || key === '/') {  "
+" operator = key; "
+" isOperatorClicked = true; "
+" } else if (key === '%') { "
+" operator = '%'; "
+" isOperatorClicked = true; "
+" calculate();  "
+" } else if (key === 'Enter' || key === '=') {  "
+" calculate();  "
+" } else if (key === 'Backspace') { "
+" input = input.slice(0, -1); "
+" updateResult(input);  "
+" } else if (key === 'Escape') {  "
+" clearInput(); "
+" } "
+" }); "
 "</script> "
-""
-"<html><head></head>"
-"<body>"
-"<input id='inputText' class='all-news-btn' type='text' value='hello'/>"
-"<button onclick = 'stop_timer_and_send_text()' class='all-news-btn'>傳送</button>"
-"<p>"
-"<button onclick ='active_clock()' class='all-news-btn'>時鐘</button>"
-"<p>"
-"<h1><p id='demo'></p></h1>"
 "</body>"
 "</html>";
  
@@ -275,6 +560,7 @@ bool rtc_on = 0;
 
 void setup() 
 {
+  delay(1000);
   /*
    * 
    */
@@ -308,21 +594,23 @@ void setup()
   /*
    * 
    */
-  if (! rtc.begin()) {
-    Serial.println("Couldn't find RTC");
-    Serial.flush();
-  }else{
-    if (rtc.lostPower()) {
-      Serial.println("RTC lost power, let's set the time!");
-      // When time needs to be set on a new device, or after a power loss, the
-      // following line sets the RTC to the date & time this sketch was compiled
-      rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-      // This line sets the RTC with an explicit date & time, for example to set
-      // January 21, 2014 at 3am you would call:
-      // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
-    }
+   rtc.begin();
     rtc_on = 1;    
-  }
+//  if (! rtc.begin()) {
+//    Serial.println("Couldn't find RTC");
+//    Serial.flush();
+//  }else{
+//    if (rtc.lostPower()) {
+//      Serial.println("RTC lost power, let's set the time!");
+//      // When time needs to be set on a new device, or after a power loss, the
+//      // following line sets the RTC to the date & time this sketch was compiled
+//      rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+//      // This line sets the RTC with an explicit date & time, for example to set
+//      // January 21, 2014 at 3am you would call:
+//      // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+//    }
+//    rtc_on = 1;    
+//  }
   
   
   // Wait for connection
@@ -337,17 +625,24 @@ void setup()
 //  ip = WiFi.localIP();
 //  serialData = ipToString(ip);
 //  Serial.println(ip);
-
+/*
+ *   captive portal
+ */
   dnsServer.start(DNS_PORT, "*", apIP);
 
   webServer.onNotFound([]() {
     webServer.send(200, "text/html", responseHTML);
   });
 
+/*
+ * 
+ */
 //  if (MDNS.begin("esp8266")) {
 //    Serisal.println("MDNS responder started");
 //  }
-
+/*
+ * 
+ */
   webServer.on(F("/"), []() {
     webServer.send(200, "text/html", responseHTML);
   });
@@ -678,7 +973,7 @@ void loop()
     if(isAscii(ch)){
 //      dgt=String(ch).toInt();
       iv18_digit(7-digit_selector,ch);
-      delay(1);
+      delay(0);
     }
 
     tick = millis()+2000;
@@ -693,7 +988,7 @@ void loop()
       high_zero_blank=0;
       iv18_digit(digit_selector,dgt);
     }
-      delay(1);
+      delay(0);
   }
 //  Serial.print(i);
 //  Serial.print(" ");
