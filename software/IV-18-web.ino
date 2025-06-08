@@ -19,6 +19,12 @@ String serialData;
 #include <uri/UriBraces.h>
 #include <uri/UriRegex.h>
 
+#include <Wire.h>
+#include <i2cdetect.h>
+
+#define SDA 4
+#define SCL 5
+
 #include "RTClib.h"
 RTC_DS3231 rtc;
 
@@ -560,13 +566,99 @@ bool rtc_on = 0;
 
 void setup() 
 {
-  delay(1000);
+  //delay(1000);
   /*
    * 
    */
-  Serial.begin(115200);
+  Serial.begin(9600);
+
+  Serial.println("IV-18");
+  Serial.println("IV-18");
+  Serial.println("IV-18");
+//  delay(3000);
   
-//  WiFi.mode(WIFI_STA);
+//  Wire.begin();
+//  Wire.requestFrom(0x68, 6);
+//    while (Wire.available()) {  // slave may send less than requested
+//      char c = Wire.read();     // receive a byte as character
+//      Serial.print(c);          // print the character
+//    }
+//    i2cdetect();
+
+  delay(2000);
+
+  // pinMode(4, OUTPUT);
+  // pinMode(5, OUTPUT);
+  // digitalWrite(5, HIGH);
+  // delay(100);
+  // digitalWrite(4, LOW);
+  // delay(100);
+  // digitalWrite(4, HIGH);
+  // delay(100);
+
+  // pinMode(SDA, INPUT_PULLUP);
+  // pinMode(SCL, INPUT_PULLUP);
+  // do {
+  //   digitalWrite(SDA, HIGH);
+  //   digitalWrite(SCL, HIGH);
+  //   if (digitalRead(SDA)) {
+  //     digitalWrite(SDA,LOW);
+  //     digitalWrite(SDA,HIGH);
+  //   }
+  //   digitalWrite(SCL, LOW);
+  // } while (digitalRead(SDA) == 0);
+
+
+  byte count = 0;
+  Wire.begin();
+  Wire.setClock(400000);
+  Wire.status(); // https://stackoverflow.com/questions/33454883/i-cant-get-ds3231-rtc-to-work
+  for (byte i = 8; i < 120; i++)
+  {
+    Wire.beginTransmission(i);
+    if (Wire.endTransmission() == 0)
+      {
+      Serial.print("Found I2C Device: ");
+      Serial.print(" (0x");
+      Serial.print(i, HEX);
+      Serial.println(")");
+      count++;
+      delay(1);
+      }
+  }
+  //  Wire.setClock(400000);
+/*
+ * 
+ */
+  Serial.println("");
+  Serial.println(F(__DATE__));
+  Serial.println(F(__TIME__));
+  /*
+   * 
+   */
+//   rtc.begin();
+//    rtc_on = 1;    
+  if (! rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    Serial.println();
+    Serial.flush();
+    
+    delay(1000);
+    ESP.restart();
+  }else{
+    if (rtc.lostPower()) {
+      Serial.println("RTC lost power, let's set the time!");
+      // When time needs to be set on a new device, or after a power loss, the
+      // following line sets the RTC to the date & time this sketch was compiled
+      // rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+      // This line sets the RTC with an explicit date & time, for example to set
+      // January 21, 2014 at 3am you would call:
+      // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+    }
+    rtc_on = 1;    
+  }
+  
+  //  WiFi.mode(WIFI_STA);
 //  WiFi.begin(ssid, password);
   /*
    *  Wifi soft-AP
@@ -588,31 +680,6 @@ void setup()
     Serial.println("Failed!");
   }
 
-  Serial.println("");
-  Serial.println(F(__DATE__));
-  Serial.println(F(__TIME__));
-  /*
-   * 
-   */
-   rtc.begin();
-    rtc_on = 1;    
-//  if (! rtc.begin()) {
-//    Serial.println("Couldn't find RTC");
-//    Serial.flush();
-//  }else{
-//    if (rtc.lostPower()) {
-//      Serial.println("RTC lost power, let's set the time!");
-//      // When time needs to be set on a new device, or after a power loss, the
-//      // following line sets the RTC to the date & time this sketch was compiled
-//      rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-//      // This line sets the RTC with an explicit date & time, for example to set
-//      // January 21, 2014 at 3am you would call:
-//      // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
-//    }
-//    rtc_on = 1;    
-//  }
-  
-  
   // Wait for connection
 //  while (WiFi.status() != WL_CONNECTED) {
 //    delay(500);
@@ -905,6 +972,9 @@ unsigned long string_shift_delay_time = 0;
 int old_softAPgetStationNum = 0;
 void loop() 
 {
+/*  
+ *   
+ */
   if((millis()-tick) % 500 == 0){
     if(WiFi.softAPgetStationNum() != old_softAPgetStationNum){
       old_softAPgetStationNum = WiFi.softAPgetStationNum();
@@ -934,8 +1004,7 @@ void loop()
       n=serialData_.toInt();
       serialDataSubStart = 0;
       serialData = urldecode(serialData_);
-   }
-   if (WiFi.softAPgetStationNum() == 0 && rtc_on == 1) {
+   }else if (WiFi.softAPgetStationNum() == 0 && rtc_on == 1) {
       serialDataSubStart = 0;
       DateTime now = rtc.now();
 //      String hour_str = ((String(now.hour()).length() == 1)?" ":"") + String(now.hour());
